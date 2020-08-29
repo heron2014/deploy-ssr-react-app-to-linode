@@ -130,6 +130,11 @@ Open ```nano /etc/apache2/sites-available/mydomain.com.conf```
   ServerAlias www.example.com
  
   DocumentRoot /var/www/example.com
+   <Directory "/var/www/fitness.buzz">
+   Options -Indexes +FollowSymLinks
+   AllowOverride All
+   Require all granted
+  </Directory>
   
   ProxyRequests Off
    ProxyPreserveHost On
@@ -213,4 +218,26 @@ It can take up to few hours to enable your domain.
 
 #### Next step SSL certificate
 
+Install Certbot https://www.linode.com/docs/quick-answers/websites/secure-http-traffic-certbot/#use-certbot-on-ubuntu - basically follow these instructions - change change nginx to apache
 
+```
+sudo apt-get update
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:certbot/certbot
+sudo apt-get update
+sudo apt-get install python-certbot-apache
+sudo certbot --apache
+```
+
+Foolow steps to allow HTTPS Through the Firewall too.
+
+Above commands will update ```/etc/apache2/sites-available/mydomain.com.conf```
+
+After that you can try to run your prod build script. We had issues with ```too many redirects```
+To fix that you we had to edit ```/etc/apache2/sites-available/example.com-le-ssl.conf``` 
+Add after <Location>:
+  
+```RequestHeader set X-Forwarded-Proto https```
+
+
+#### Set auto-renewal for certificates - follow step5 from here https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-18-04 
